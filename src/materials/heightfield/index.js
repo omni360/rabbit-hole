@@ -1,5 +1,9 @@
-import shader from "./inlined/shader";
 import THREE from "three";
+
+import fragment from "./glsl/shader.frag";
+import vertex from "./glsl/shader.vert";
+import lodPars from "./glsl/lod.pars.vert";
+import lod from "./glsl/lod.vert";
 
 /**
  * A heightfield LOD shader material.
@@ -7,13 +11,12 @@ import THREE from "three";
  * @class HeightfieldMaterial
  * @constructor
  * @extends ShaderMaterial
- * @params {Texture} heightmap - The heightmap of the terrain.
  * @params {Boolean} usePlaneParameters - Whether plane parameters should be used.
  */
 
 export class HeightfieldMaterial extends THREE.ShaderMaterial {
 
-	constructor(heightmap, usePlaneParameters) {
+	constructor(usePlaneParameters) {
 
 		super({
 
@@ -32,12 +35,11 @@ export class HeightfieldMaterial extends THREE.ShaderMaterial {
 
 				{
 
-					heightmap: {type: "t", value: heightmap},
+					heightMap: {type: "t", value: null},
 
 					scale: {type: "f", value: 1.0},
 					level: {type: "i", value: 0},
 					morphingLevels: {type: "i", value: 2},
-					resolution: {type: "i", value: 64},
 
 					planeUp: {type: "v3", value: new THREE.Vector3(0, 1, 0)},
 					planeAt: {type: "v3", value: new THREE.Vector3(0, 0, 1)},
@@ -51,8 +53,8 @@ export class HeightfieldMaterial extends THREE.ShaderMaterial {
 
 			]),
 
-			fragmentShader: shader.fragment,
-			vertexShader: shader.vertex.main,
+			fragmentShader: fragment,
+			vertexShader: vertex,
 
 			extensions: {
 				derivatives: true
@@ -68,8 +70,23 @@ export class HeightfieldMaterial extends THREE.ShaderMaterial {
 		if(usePlaneParameters) { this.defines.USE_PLANE_PARAMETERS = "1"; }
 
 		// Register custom shader code.
-		THREE.ShaderChunk.lod_pars_vertex = shader.vertex.lod_pars;
-		THREE.ShaderChunk.lod_vertex = shader.vertex.lod;
+		THREE.ShaderChunk.lod_pars_vertex = lodPars;
+		THREE.ShaderChunk.lod_vertex = lod;
+
+	}
+
+	/**
+	 * A height map.
+	 *
+	 * @property heightMap
+	 * @type Texture
+	 */
+
+	get heightMap() { return this.uniforms.heightMap.value; }
+
+	set heightMap(x) {
+
+		this.uniforms.heightMap.value = x;
 
 	}
 

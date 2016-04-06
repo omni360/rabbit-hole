@@ -1,4 +1,4 @@
-uniform sampler2D heightmap;
+uniform sampler2D heightMap;
 
 uniform float scale;
 uniform int level;
@@ -69,7 +69,7 @@ vec4 computePosition(vec4 position) {
 
 	#endif
 
-	// Project the camera position and the scene origin on the grid using plane parameters.
+	// Project the camera position and the scene origin on the grid.
 	vec3 projectedCamera = vec3(cameraPosition.x, 0.0, cameraPosition.z);
 
 	#ifdef USE_PLANE_PARAMETERS
@@ -124,18 +124,11 @@ vec4 computePosition(vec4 position) {
 
 }
 
-float getHeight(vec2 inDir, vec3 position) {
-
-	float height = sin(position.x * inDir.x + 1.0) * 0.8 + cos(position.z * inDir.y + 1.0) * 0.2;
-	return height * height * height + 0.5;
-
-}
-
-/*float getHeight(vec2 coord) {
+float getHeight(vec2 coord) {
 
 	// todo: supersample.
-	float height = texture2D(heightmap, coord).r;
+	float height = texture2D(heightMap, coord).r;
 
 	return height;
 
-}*/
+}
